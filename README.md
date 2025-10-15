@@ -14,6 +14,14 @@
 
 ---
 
+## 🔎 Vista Previa
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/b241b8a2-e684-480b-8cdb-efb104956269" alt="ssss" width="800" height="560" />
+</p>
+
+
+
 ## 🎯 Descripción
 
 **OFFSIDE!** es una aplicación web interactiva que pone a prueba tus conocimientos sobre fútbol mundial. ofrece una experiencia de juego inmersiva y educativa.

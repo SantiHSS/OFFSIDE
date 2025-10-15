@@ -217,7 +217,13 @@ const MainMenu = () => {
 
 // Stats Screen Component
 interface StatsScreenProps {
-  stats: any;
+  stats: {
+    bestScore: number;
+    averageScore: number;
+    correctAnswers: number;
+    totalQuestions: number;
+    totalGames: number;
+  };
   onBack: () => void;
   onReset: () => void;
 }

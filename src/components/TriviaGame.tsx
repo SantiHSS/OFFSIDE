@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Question, GameState } from '@/types';
+import { useState, useEffect, useCallback } from 'react';
+import { GameState } from '@/types';
 import { getRandomQuestions, getDailyQuestions } from '@/data/questions';
 import { usePlayerStats, useDailyQuiz } from '@/hooks/useLocalStorage';
 
@@ -28,28 +28,7 @@ const TriviaGame: React.FC<TriviaGameProps> = ({ mode, onBack }) => {
   const [showResult, setShowResult] = useState(false);
   const [isAnswered, setIsAnswered] = useState(false);
 
-  useEffect(() => {
-    initializeGame();
-  }, [mode]);
-
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    
-    if (gameState.timeLeft > 0 && !gameState.isGameOver && !isAnswered) {
-      interval = setInterval(() => {
-        setGameState(prev => ({
-          ...prev,
-          timeLeft: prev.timeLeft - 1
-        }));
-      }, 1000);
-    } else if (gameState.timeLeft === 0 && !isAnswered) {
-      handleTimeUp();
-    }
-
-    return () => clearInterval(interval);
-  }, [gameState.timeLeft, gameState.isGameOver, isAnswered]);
-
-  const initializeGame = () => {
+  const initializeGame = useCallback(() => {
     if (mode === 'daily' && isCompleted) {
       setGameState(prev => ({ ...prev, isGameOver: true }));
       return;
@@ -72,7 +51,28 @@ const TriviaGame: React.FC<TriviaGameProps> = ({ mode, onBack }) => {
     setSelectedAnswer(null);
     setShowResult(false);
     setIsAnswered(false);
-  };
+  }, [mode, isCompleted]);
+
+  useEffect(() => {
+    initializeGame();
+  }, [mode, initializeGame]);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    
+    if (gameState.timeLeft > 0 && !gameState.isGameOver && !isAnswered) {
+      interval = setInterval(() => {
+        setGameState(prev => ({
+          ...prev,
+          timeLeft: prev.timeLeft - 1
+        }));
+      }, 1000);
+    } else if (gameState.timeLeft === 0 && !isAnswered) {
+      handleTimeUp();
+    }
+
+    return () => clearInterval(interval);
+  }, [gameState.timeLeft, gameState.isGameOver, isAnswered]);
 
   const handleTimeUp = () => {
     setIsAnswered(true);
@@ -375,7 +375,11 @@ interface GameResultsProps {
   onRestart: () => void;
   onBack?: () => void;
   mode: 'normal' | 'daily';
-  stats: any;
+  stats: {
+    bestScore: number;
+    averageScore: number;
+    totalGames: number;
+  };
   isDaily: boolean;
   isTodayCompleted: boolean;
 }
@@ -386,7 +390,6 @@ const GameResults: React.FC<GameResultsProps> = ({
   totalQuestions, 
   onRestart,
   onBack, 
-  mode, 
   stats,
   isDaily,
   isTodayCompleted
